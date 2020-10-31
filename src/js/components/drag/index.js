@@ -121,9 +121,13 @@ export default ( Splide, Components ) => {
 				.on( 'mounted refresh', () => {
 					// Prevent dragging an image or anchor itself.
 					each( Elements.list.querySelectorAll( 'img, a' ), elm => {
-						Splide
-							.off( 'dragstart', elm )
-							.on( 'dragstart', e => { e.preventDefault() }, elm, { passive: false } );
+						if ( elm instanceof Element ) {
+							Splide
+								.off('dragstart', elm)
+								.on('dragstart', e => {
+									e.preventDefault()
+								}, elm, {passive: false});
+						}
 					} );
 				} )
 				.on( 'mounted updated', () => {

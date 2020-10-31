@@ -35,7 +35,7 @@ export function child( parent, tagOrClassName ) {
 }
 
 /**
- * Return chile elements that matches the provided tag or class name.
+ * Return child elements that matches the provided tag or class name.
  *
  * @param {Element} parent         - A parent element.
  * @param {string}  tagOrClassName - A tag or class name.
@@ -45,7 +45,7 @@ export function child( parent, tagOrClassName ) {
 export function children( parent, tagOrClassName ) {
 	if ( parent ) {
 		return values( parent.children ).filter( child => {
-			return hasClass( child, tagOrClassName.split( ' ' )[0] ) || child.tagName === tagOrClassName;
+			return (child instanceof Element) && (hasClass(child, tagOrClassName.split(' ')[0]) || child.tagName === tagOrClassName);
 		} );
 	}
 
@@ -248,11 +248,13 @@ export function loaded( elm, callback ) {
 		let count = 0;
 
 		each( images, img => {
-			img.onload = img.onerror = () => {
-				if ( ++count === length ) {
-					callback();
-				}
-			};
+			if( img instanceof Element ) {
+				img.onload = img.onerror = () => {
+					if ( ++count === length ) {
+						callback();
+					}
+				};
+			}
 		} );
 	} else {
 		// Trigger the callback immediately if there is no image.

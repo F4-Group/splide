@@ -422,7 +422,7 @@ function child(parent, tagOrClassName) {
   return children(parent, tagOrClassName)[0];
 }
 /**
- * Return chile elements that matches the provided tag or class name.
+ * Return child elements that matches the provided tag or class name.
  *
  * @param {Element} parent         - A parent element.
  * @param {string}  tagOrClassName - A tag or class name.
@@ -433,7 +433,7 @@ function child(parent, tagOrClassName) {
 function children(parent, tagOrClassName) {
   if (parent) {
     return values(parent.children).filter(function (child) {
-      return hasClass(child, tagOrClassName.split(' ')[0]) || child.tagName === tagOrClassName;
+      return child instanceof Element && (hasClass(child, tagOrClassName.split(' ')[0]) || child.tagName === tagOrClassName);
     });
   }
 
@@ -638,11 +638,13 @@ function loaded(elm, callback) {
   if (length) {
     var count = 0;
     each(images, function (img) {
-      img.onload = img.onerror = function () {
-        if (++count === length) {
-          callback();
-        }
-      };
+      if (img instanceof Element) {
+        img.onload = img.onerror = function () {
+          if (++count === length) {
+            callback();
+          }
+        };
+      }
     });
   } else {
     // Trigger the callback immediately if there is no image.
@@ -3877,11 +3879,13 @@ var FRICTION_REDUCER = 7;
       }).on('touchend touchcancel mouseleave mouseup dragend', end, track).on('mounted refresh', function () {
         // Prevent dragging an image or anchor itself.
         each(Elements.list.querySelectorAll('img, a'), function (elm) {
-          Splide.off('dragstart', elm).on('dragstart', function (e) {
-            e.preventDefault();
-          }, elm, {
-            passive: false
-          });
+          if (elm instanceof Element) {
+            Splide.off('dragstart', elm).on('dragstart', function (e) {
+              e.preventDefault();
+            }, elm, {
+              passive: false
+            });
+          }
         });
       }).on('mounted updated', function () {
         _this.disabled = !Splide.options.drag;
@@ -4929,14 +4933,16 @@ var SRCSET_DATA_NAME = 'data-splide-lazy-srcset';
         init();
         Components.Elements.each(function (Slide) {
           each(Slide.slide.querySelectorAll("[" + SRC_DATA_NAME + "], [" + SRCSET_DATA_NAME + "]"), function (img) {
-            if (!img.src && !img.srcset) {
-              images.push({
-                img: img,
-                Slide: Slide
-              });
-              applyStyle(img, {
-                display: 'none'
-              });
+            if (img instanceof Element) {
+              if (!img.src && !img.srcset) {
+                images.push({
+                  img: img,
+                  Slide: Slide
+                });
+                applyStyle(img, {
+                  display: 'none'
+                });
+              }
             }
           });
         });

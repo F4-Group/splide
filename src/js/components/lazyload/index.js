@@ -92,9 +92,11 @@ export default ( Splide, Components, name ) => {
 
 				Components.Elements.each( Slide => {
 					each( Slide.slide.querySelectorAll( `[${ SRC_DATA_NAME }], [${ SRCSET_DATA_NAME }]` ), img => {
-						if ( ! img.src && ! img.srcset ) {
-							images.push( { img, Slide } );
-							applyStyle( img, { display: 'none' } );
+						if( img instanceof Element ) {
+							if (!img.src && !img.srcset) {
+								images.push({img, Slide});
+								applyStyle(img, {display: 'none'});
+							}
 						}
 					} );
 				} );
