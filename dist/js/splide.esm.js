@@ -3924,25 +3924,27 @@ var FRICTION_REDUCER = 7;
 
 
   function move(e) {
-    if (startInfo) {
-      currentInfo = analyze(e, startInfo);
+    if (!Drag.disabled) {
+      if (startInfo) {
+        currentInfo = analyze(e, startInfo);
 
-      if (isDragging) {
-        if (e.cancelable) {
-          e.preventDefault();
-        }
+        if (isDragging) {
+          if (e.cancelable) {
+            e.preventDefault();
+          }
 
-        if (!Splide.is(FADE)) {
-          var position = startCoord[axis] + currentInfo.offset[axis];
-          Track.translate(resist(position));
-        }
-      } else {
-        if (shouldMove(currentInfo)) {
-          Splide.emit('drag', startInfo);
-          isDragging = true;
-          Track.cancel(); // These params are actual drag data.
+          if (!Splide.is(FADE)) {
+            var position = startCoord[axis] + currentInfo.offset[axis];
+            Track.translate(resist(position));
+          }
+        } else {
+          if (shouldMove(currentInfo)) {
+            Splide.emit('drag', startInfo);
+            isDragging = true;
+            Track.cancel(); // These params are actual drag data.
 
-          init(e);
+            init(e);
+          }
         }
       }
     }
@@ -4009,10 +4011,12 @@ var FRICTION_REDUCER = 7;
   function end() {
     startInfo = null;
 
-    if (isDragging) {
-      Splide.emit('dragged', currentInfo);
-      go(currentInfo);
-      isDragging = false;
+    if (!Drag.disabled) {
+      if (isDragging) {
+        Splide.emit('dragged', currentInfo);
+        go(currentInfo);
+        isDragging = false;
+      }
     }
   }
   /**

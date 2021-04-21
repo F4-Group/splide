@@ -165,26 +165,29 @@ export default ( Splide, Components ) => {
 	 * @param {TouchEvent|MouseEvent} e - TouchEvent or MouseEvent object.
 	 */
 	function move( e ) {
-		if ( startInfo ) {
-			currentInfo = analyze( e, startInfo );
 
-			if ( isDragging ) {
-				if ( e.cancelable ) {
-					e.preventDefault();
-				}
+		if(! Drag.disabled) {
+			if ( startInfo ) {
+				currentInfo = analyze( e, startInfo );
 
-				if ( ! Splide.is( FADE ) ) {
-					const position = startCoord[ axis ] + currentInfo.offset[ axis ];
-					Track.translate( resist( position ) );
-				}
-			} else {
-				if ( shouldMove( currentInfo ) ) {
-					Splide.emit( 'drag', startInfo );
-					isDragging = true;
-					Track.cancel();
+				if ( isDragging ) {
+					if ( e.cancelable ) {
+						e.preventDefault();
+					}
 
-					// These params are actual drag data.
-					init( e );
+					if ( ! Splide.is( FADE ) ) {
+						const position = startCoord[ axis ] + currentInfo.offset[ axis ];
+						Track.translate( resist( position ) );
+					}
+				} else {
+					if ( shouldMove( currentInfo ) ) {
+						Splide.emit( 'drag', startInfo );
+						isDragging = true;
+						Track.cancel();
+
+						// These params are actual drag data.
+						init( e );
+					}
 				}
 			}
 		}
@@ -243,11 +246,12 @@ export default ( Splide, Components ) => {
 	 */
 	function end() {
 		startInfo = null;
-
-		if ( isDragging ) {
-			Splide.emit( 'dragged', currentInfo );
-			go( currentInfo );
-			isDragging = false;
+		if(! Drag.disabled) {
+			if (isDragging) {
+				Splide.emit('dragged', currentInfo);
+				go(currentInfo);
+				isDragging = false;
+			}
 		}
 	}
 
